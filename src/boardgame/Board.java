@@ -44,14 +44,14 @@ public class Board {
         return row >= 0 && row < rows && column >= 0 && column < columns;
     }
 
-    public boolean positionExists(Position position) {
-        return positionExists(position.getRow(), position.getColumn());
-    }
-
     private void validatePositionExists(int row, int column) {
         if (!positionExists(row, column)) {
             throw new BoardException("Position does not exist");
         }
+    }
+
+    public boolean positionExists(Position position) {
+        return positionExists(position.getRow(), position.getColumn());
     }
 
     private void validatePositionExists(Position position) {
