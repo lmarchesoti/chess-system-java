@@ -2,6 +2,7 @@ package chess;
 
 import boardgame.Board;
 import boardgame.Piece;
+import boardgame.Position;
 
 public abstract class ChessPiece extends Piece {
     private final Color color;
@@ -26,5 +27,10 @@ public abstract class ChessPiece extends Piece {
 
     protected void decreaseMoveCount() {
         this.moveCount--;
+    }
+
+    protected boolean isThereOpponentPiece(Position position) {
+        ChessPiece piece = (ChessPiece) getBoard().piece(position);
+        return piece != null && piece.getColor() != color;
     }
 }
