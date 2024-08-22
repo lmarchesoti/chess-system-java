@@ -17,6 +17,10 @@ public abstract class ChessPiece extends Piece {
         return color;
     }
 
+    public ChessPosition getChessPosition() {
+        return ChessPosition.fromPosition(position);
+    }
+
     public int getMoveCount() {
         return moveCount;
     }
@@ -53,9 +57,12 @@ public abstract class ChessPiece extends Piece {
     private void possibleMovesInDirection(int rowStep, int colStep, boolean[][] moves) {
         Position p = new Position();
         p.setValues(position.getRow() + rowStep, position.getColumn() + colStep);
-        while (getBoard().positionExists(p) && canMove(p)) {
+        while (getBoard().positionExists(p) && !getBoard().thereIsAPiece(p)) {
             moves[p.getRow()][p.getColumn()] = true;
             p.setValues(p.getRow() + rowStep, p.getColumn() + colStep);
+        }
+        if (getBoard().positionExists(p) && isThereOpponentPiece(p)) {
+            moves[p.getRow()][p.getColumn()] = true;
         }
     }
 
