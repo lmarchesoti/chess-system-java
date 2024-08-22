@@ -15,6 +15,7 @@ public class ChessMatch {
     private Color currentPlayer;
     private final Board board;
     private boolean check;
+    private boolean checkMate;
 
     private final List<Piece> piecesOnTheBoard = new ArrayList<>();
     private final List<Piece> capturedPieces = new ArrayList<>();
@@ -36,6 +37,10 @@ public class ChessMatch {
 
     public boolean getCheck() {
         return check;
+    }
+
+    public boolean getCheckMate() {
+        return checkMate;
     }
 
     public ChessPiece[][] getPieces() {
@@ -72,7 +77,13 @@ public class ChessMatch {
 
         check = testCheck(opponent(currentPlayer));
 
-        nextTurn();
+        if (check) {
+            checkMate = testCheckMate(opponent(currentPlayer));
+        }
+
+        if (!checkMate) {
+            nextTurn();
+        }
 
         return (ChessPiece) capturedPiece;
     }
@@ -161,24 +172,46 @@ public class ChessMatch {
         return false;
     }
 
+    private boolean testCheckMate(Color color) {
+        List<Piece> pieces = getPieces(color);
+
+        for (Piece p : pieces) {
+            boolean[][] moves = p.possibleMoves();
+            for (int i = 0; i < moves.length; i++) {
+                for (int j = 0; j < moves.length; j++) {
+                    if (moves[i][j] && !testMoveForCheck(color, p, i, j)) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean testMoveForCheck(Color color, Piece piece, int i, int j) {
+        Position source = ((ChessPiece) piece).getChessPosition().toPosition();
+        Position target = new Position(i, j);
+        Piece capturedPiece = makeMove(source, target);
+
+        boolean testCheck = testCheck(color);
+
+        undoMove(source, target, capturedPiece);
+
+        return testCheck;
+    }
+
     private void placeNewPiece(char column, int row, ChessPiece piece) {
         board.placePiece(piece, new ChessPosition(column, row).toPosition());
         piecesOnTheBoard.add(piece);
     }
 
     private void initialSetup() {
-        placeNewPiece('c', 1, new Rook(board, Color.WHITE));
-        placeNewPiece('c', 2, new Rook(board, Color.WHITE));
-        placeNewPiece('d', 2, new Rook(board, Color.WHITE));
-        placeNewPiece('e', 2, new Rook(board, Color.WHITE));
-        placeNewPiece('e', 1, new Rook(board, Color.WHITE));
-        placeNewPiece('d', 1, new King(board, Color.WHITE));
+        placeNewPiece('h', 7, new Rook(board, Color.WHITE));
+        placeNewPiece('d', 1, new Rook(board, Color.WHITE));
+        placeNewPiece('e', 1, new King(board, Color.WHITE));
 
-        placeNewPiece('c', 7, new Rook(board, Color.BLACK));
-        placeNewPiece('c', 8, new Rook(board, Color.BLACK));
-        placeNewPiece('d', 7, new Rook(board, Color.BLACK));
-        placeNewPiece('e', 7, new Rook(board, Color.BLACK));
-        placeNewPiece('e', 8, new Rook(board, Color.BLACK));
-        placeNewPiece('d', 8, new King(board, Color.BLACK));
+        placeNewPiece('b', 8, new Rook(board, Color.BLACK));
+        placeNewPiece('a', 8, new King(board, Color.BLACK));
     }
 }
