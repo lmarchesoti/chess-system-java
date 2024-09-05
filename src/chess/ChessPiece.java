@@ -54,6 +54,22 @@ public abstract class ChessPiece extends Piece {
         possibleMovesInDirection(0, 1, moves);
     }
 
+    protected void possibleMovesDiagonalNE(boolean[][] moves){
+        possibleMovesInDirection(-1, -1, moves);
+    }
+
+    protected void possibleMovesDiagonalSE(boolean[][] moves){
+        possibleMovesInDirection(1, -1, moves);
+    }
+
+    protected void possibleMovesDiagonalNW(boolean[][] moves){
+        possibleMovesInDirection(-1, 1, moves);
+    }
+
+    protected void possibleMovesDiagonalSW(boolean[][] moves){
+        possibleMovesInDirection(1, 1, moves);
+    }
+
     private void possibleMovesInDirection(int rowStep, int colStep, boolean[][] moves) {
         Position p = new Position();
         p.setValues(position.getRow() + rowStep, position.getColumn() + colStep);
