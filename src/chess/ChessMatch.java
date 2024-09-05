@@ -10,7 +10,6 @@ import chess.pieces.Pawn;
 import chess.pieces.Queen;
 import chess.pieces.Rook;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -142,7 +141,7 @@ public class ChessMatch {
             case "B" -> new Bishop(board, promoted.getColor());
             case "N" -> new Knight(board, promoted.getColor());
             case "R" -> new Rook(board, promoted.getColor());
-            default -> throw new InvalidParameterException("Invalid type for promotion");
+            default -> promoted;
         };
     }
 
