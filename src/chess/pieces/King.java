@@ -1,12 +1,18 @@
 package chess.pieces;
 
 import boardgame.Board;
+import boardgame.Position;
+import chess.ChessMatch;
 import chess.ChessPiece;
 import chess.Color;
 
 public class King extends ChessPiece {
-    public King(Board board, Color color) {
+
+    private ChessMatch chessMatch;
+
+    public King(Board board, Color color, ChessMatch chessMatch) {
         super(board, color);
+        this.chessMatch = chessMatch;
     }
 
     @Override
@@ -23,8 +29,44 @@ public class King extends ChessPiece {
         possibleMoveNE(moves);
         possibleMoveSW(moves);
         possibleMoveSE(moves);
+        possibleMoveCastling(moves);
 
         return moves;
+    }
+
+    private void possibleMoveCastling(boolean[][] moves) {
+        if (getMoveCount() == 0 && !chessMatch.getCheck()) {
+            possibleMoveShortCastling(moves);
+            possibleMoveLongCastling(moves);
+        }
+    }
+
+    private void possibleMoveLongCastling(boolean[][] moves) {
+        Position rookPosition = new Position(position.getRow(), position.getColumn() + 3);
+        if (testRookCastling(rookPosition)) {
+            Position p1 = new Position(position.getRow(), position.getColumn() + 1);
+            Position p2 = new Position(position.getRow(), position.getColumn() + 2);
+            if (!getBoard().thereIsAPiece(p1) && !getBoard().thereIsAPiece(p2)) {
+                moves[position.getRow()][position.getColumn() + 2] = true;
+            }
+        }
+    }
+
+    private void possibleMoveShortCastling(boolean[][] moves) {
+        Position rookPosition = new Position(position.getRow(), position.getColumn() - 4);
+        if (testRookCastling(rookPosition)) {
+            Position p1 = new Position(position.getRow(), position.getColumn() - 1);
+            Position p2 = new Position(position.getRow(), position.getColumn() - 2);
+            Position p3 = new Position(position.getRow(), position.getColumn() - 3);
+            if (!getBoard().thereIsAPiece(p1) && !getBoard().thereIsAPiece(p2) && !getBoard().thereIsAPiece(p3)) {
+                moves[position.getRow()][position.getColumn() - 2] = true;
+            }
+        }
+    }
+
+    private boolean testRookCastling(Position position) {
+        ChessPiece p = (ChessPiece) getBoard().piece(position);
+        return p instanceof Rook && p.getColor().equals(getColor()) && p.getMoveCount() == 0;
     }
 
     private void possibleMoveAbove(boolean[][] moves) {
