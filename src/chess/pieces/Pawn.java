@@ -2,13 +2,17 @@ package chess.pieces;
 
 import boardgame.Board;
 import boardgame.Position;
+import chess.ChessMatch;
 import chess.ChessPiece;
 import chess.Color;
 
 public class Pawn extends ChessPiece {
 
-    public Pawn(Board board, Color color) {
+    private ChessMatch chessMatch;
+
+    public Pawn(Board board, Color color, ChessMatch chessMatch) {
         super(board, color);
+        this.chessMatch = chessMatch;
     }
 
     @Override
@@ -22,7 +26,28 @@ public class Pawn extends ChessPiece {
         possibleMovesForward(moveDirection, moves);
         possibleMovesCapture(moveDirection, moves);
 
+        possibleMoveEnPassant(moves);
+
         return moves;
+    }
+
+    private void possibleMoveEnPassant(boolean[][] moves) {
+        int left = -1;
+        int right = 1;
+        int enPassantRow = Color.WHITE.equals(getColor()) ? 3 : 4;
+        int forward = Color.WHITE.equals(getColor()) ? -1 : 1;
+        possibleMoveEnPassantSingle(moves, enPassantRow, left, forward);
+        possibleMoveEnPassantSingle(moves, enPassantRow, right, forward);
+    }
+
+    private void possibleMoveEnPassantSingle(boolean[][] moves, int enPassantRow, int side, int forward) {
+        if (position.getRow() == enPassantRow) {
+            Position sidePosition = new Position(position.getRow(), position.getColumn() + side);
+            Position forwardSidePosition = new Position(position.getRow() + forward, position.getColumn() + side);
+            if (getBoard().positionExists(sidePosition) && isThereOpponentPiece(sidePosition) && getBoard().piece(sidePosition) == chessMatch.getEnPassantVulnerable() && !getBoard().thereIsAPiece(forwardSidePosition)) {
+                moves[sidePosition.getRow() + forward][sidePosition.getColumn()] = true;
+            }
+        }
     }
 
     private void possibleMovesCapture(int moveDirection, boolean[][] moves) {
